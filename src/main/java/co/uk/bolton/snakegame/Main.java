@@ -82,6 +82,7 @@ public class Main implements KeyListener, WindowListener{
         canvas.setSize(width + 7, height + 27);
         frame.add(canvas);
         canvas.addKeyListener(this);
+        frame.addWindowListener(this);
         frame.dispose();
         frame.validate();
         frame.setTitle("Snake Game");
