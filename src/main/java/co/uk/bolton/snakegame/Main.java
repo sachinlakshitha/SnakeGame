@@ -7,6 +7,7 @@ package co.uk.bolton.snakegame;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -199,7 +200,31 @@ public class Main implements KeyListener, WindowListener{
                         }
                     }
                 }
-                
+
+                graph.setFont(new Font(Font.SANS_SERIF, Font.BOLD, height / 40));
+
+                if (game_over) {
+                    graph.setColor(Color.RED);
+                    {
+                        Font currentFont = graph.getFont();
+                        Font newFont = currentFont.deriveFont(currentFont.getSize() * 2.8F);
+                        graph.setFont(newFont);
+
+                        graph.drawString("GAME OVER", height / 3 - 20, height / 2);
+                    }
+
+                    {
+                        Font currentFont = graph.getFont();
+                        Font newFont = currentFont.deriveFont(currentFont.getSize() / 2.0F);
+                        graph.setFont(newFont);
+
+                        graph.drawString("FINAL SCORE = " + getScore(), height / 3 + 20, height / 2 + 30);
+                    }
+                } else if (paused) {
+                    graph.setColor(Color.RED);
+                    graph.drawString("PAUSED", height / 2 - 30, height / 2);
+                }
+
                 graph.setColor(Color.BLACK);
                 graph.drawString("SCORE = " + getScore(), 10, 20);
 
@@ -261,9 +286,21 @@ public class Main implements KeyListener, WindowListener{
             fut_y = 0;
         }
 
+        if (grid[fut_x][fut_y] == FOOD_BONUS) {
+            grow++;
+            placeBonus(FOOD_BONUS);
+        } else if (grid[fut_x][fut_y] == BIG_FOOD_BONUS) {
+            grow += 3;
+        }
+
         snake[0][0] = fut_x;
         snake[0][1] = fut_y;
 
+        if ((grid[snake[0][0]][snake[0][1]] == SNAKE)) {
+            gameOver();
+            return;
+        }
+        
         grid[tempx][tempy] = EMPTY;
 
         int snakex, snakey, i;
@@ -340,10 +377,13 @@ public class Main implements KeyListener, WindowListener{
         
         return score;
     }
+    
+    private void gameOver() {
+        game_over = true;
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -400,12 +440,10 @@ public class Main implements KeyListener, WindowListener{
 
     @Override
     public void keyReleased(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void windowOpened(WindowEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -416,26 +454,21 @@ public class Main implements KeyListener, WindowListener{
 
     @Override
     public void windowClosed(WindowEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void windowIconified(WindowEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void windowDeiconified(WindowEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void windowActivated(WindowEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void windowDeactivated(WindowEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
