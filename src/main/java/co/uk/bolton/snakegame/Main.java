@@ -9,6 +9,9 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
@@ -27,6 +30,9 @@ public class Main implements KeyListener{
     private int gameSize = 40;
     private int[][] grid = null;
     private int[][] snake = null;
+    public final static int FOOD_BONUS = 1;
+    public final static int FOOD_MALUS = 2;
+    public final static int BIG_FOOD_BONUS = 3;
     public final static int SNAKE = 4;
     public final static int SNAKE_HEAD = 5;
     
@@ -68,6 +74,7 @@ public class Main implements KeyListener{
         snake = new int[gameSize * gameSize][2];
         
         initGame();
+        renderGame();
     }
     
     private void initGame() {
@@ -85,6 +92,67 @@ public class Main implements KeyListener{
         snake[0][0] = gameSize / 2;
         snake[0][1] = gameSize / 2;
         grid[gameSize / 2][gameSize / 2] = SNAKE_HEAD;
+    }
+    
+    private void renderGame() {
+        int gridUnit = height / gameSize;
+        canvas.paint(graph);
+
+        do {
+            do {
+                graph = strategy.getDrawGraphics();
+                ((Graphics2D) graph).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                graph.setColor(Color.WHITE);
+                graph.fillRect(0, 0, width, height);
+
+                int gridCase = EMPTY;
+
+                for (int i = 0; i < gameSize; i++) {
+                    for (int j = 0; j < gameSize; j++) {
+                        gridCase = grid[i][j];
+
+                        switch (gridCase) {
+                            case SNAKE:
+                                graph.setColor(new Color(17, 14, 218));
+                                graph.fillOval(i * gridUnit, j * gridUnit,
+                                        gridUnit, gridUnit);
+                                break;
+                            case SNAKE_HEAD:
+                                graph.setColor(new Color(0, 0, 0));
+                                graph.fillOval(i * gridUnit, j * gridUnit,
+                                        gridUnit, gridUnit);
+                                break;
+                            case FOOD_BONUS:
+                                graph.setColor(new Color(3, 171, 14));
+                                graph.fillOval(i * gridUnit + gridUnit / 4, j
+                                        * gridUnit + gridUnit / 4, gridUnit / 2,
+                                        gridUnit / 2);
+                                break;
+                            case FOOD_MALUS:
+                                graph.setColor(new Color(244, 2, 31));
+                                graph.fillOval(i * gridUnit + gridUnit / 4, j
+                                        * gridUnit + gridUnit / 4, gridUnit / 2,
+                                        gridUnit / 2);
+                                break;
+                            case BIG_FOOD_BONUS:
+                                graph.setColor(new Color(198, 39, 203));
+                                graph.fillOval(i * gridUnit + gridUnit / 4, j
+                                        * gridUnit + gridUnit / 4, gridUnit / 2,
+                                        gridUnit / 2);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                graph.dispose();
+            } while (strategy.contentsRestored());
+
+            strategy.show();
+            Toolkit.getDefaultToolkit().sync();
+        } while (strategy.contentsLost());
     }
 
     @Override
