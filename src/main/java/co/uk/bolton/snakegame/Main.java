@@ -273,6 +273,12 @@ public class Main implements KeyListener, WindowListener{
         int fut_x = snake[0][0] + xmove;
         int fut_y = snake[0][1] + ymove;
 
+        if ((fut_x < 0) || (fut_y < 0) || (fut_x >= gameSize)
+                || (fut_y >= gameSize)) {
+            gameOver();
+            return;
+        }
+
         if (fut_x < 0) {
             fut_x = gameSize - 1;
         }
