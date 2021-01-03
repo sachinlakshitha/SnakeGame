@@ -24,6 +24,13 @@ public class Main implements KeyListener{
     private BufferStrategy strategy = null;
     private int height = 600;
     private int width = 600;
+    private int gameSize = 40;
+    private int[][] grid = null;
+    private int[][] snake = null;
+    public final static int SNAKE = 4;
+    public final static int SNAKE_HEAD = 5;
+    
+    public final static int EMPTY = 0;
     
     public Main() {
         super();
@@ -56,6 +63,28 @@ public class Main implements KeyListener{
 
         strategy = canvas.getBufferStrategy();
         graph = strategy.getDrawGraphics();
+        
+        grid = new int[gameSize][gameSize];
+        snake = new int[gameSize * gameSize][2];
+        
+        initGame();
+    }
+    
+    private void initGame() {
+        for (int i = 0; i < gameSize; i++) {
+            for (int j = 0; j < gameSize; j++) {
+                grid[i][j] = EMPTY;
+            }
+        }
+
+        for (int i = 0; i < gameSize * gameSize; i++) {
+            snake[i][0] = -1;
+            snake[i][1] = -1;
+        }
+
+        snake[0][0] = gameSize / 2;
+        snake[0][1] = gameSize / 2;
+        grid[gameSize / 2][gameSize / 2] = SNAKE_HEAD;
     }
 
     @Override
