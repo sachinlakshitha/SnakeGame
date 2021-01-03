@@ -199,6 +199,9 @@ public class Main implements KeyListener, WindowListener{
                         }
                     }
                 }
+                
+                graph.setColor(Color.BLACK);
+                graph.drawString("SCORE = " + getScore(), 10, 20);
 
                 graph.dispose();
             } while (strategy.contentsRestored());
@@ -305,7 +308,12 @@ public class Main implements KeyListener, WindowListener{
             snake[i][0] = tempx;
             snake[i][1] = tempy;
             grid[snake[i][0]][snake[i][1]] = SNAKE;
-                        
+            
+            if (getScore() % 10 == 0) {
+                placeBonus(BIG_FOOD_BONUS);
+                bonusTime = 100;
+            }
+            
             grow--;
         }
     }
@@ -318,6 +326,19 @@ public class Main implements KeyListener, WindowListener{
         } else {
             placeBonus(bonus_type);
         }
+    }
+    
+    private int getScore() {
+        int score = 0;
+        
+        for (int i = 0; i < gameSize * gameSize; i++) {
+            if ((snake[i][0] < 0) || (snake[i][1] < 0)) {
+                break;
+            }
+            score++;
+        }
+        
+        return score;
     }
 
     @Override
