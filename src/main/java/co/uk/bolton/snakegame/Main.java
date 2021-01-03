@@ -15,6 +15,8 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -38,6 +40,17 @@ public class Main implements KeyListener{
     
     public final static int EMPTY = 0;
     
+    private int grow = 0;
+    
+    private long speed = 250;
+    private long cycleTime = 0;
+    private long sleepTime = 0;
+    private int bonusTime = 0;
+    
+    private boolean running = true;
+    private boolean game_over = false;
+    private boolean paused = false;
+    
     public Main() {
         super();
         frame = new Frame();
@@ -47,6 +60,7 @@ public class Main implements KeyListener{
     public static void main(String[] args) {
         Main main = new Main();
         main.init();
+        main.mainLoop();
     }
     
     public void init() {
@@ -92,6 +106,28 @@ public class Main implements KeyListener{
         snake[0][0] = gameSize / 2;
         snake[0][1] = gameSize / 2;
         grid[gameSize / 2][gameSize / 2] = SNAKE_HEAD;
+    }
+    
+    public void mainLoop() {
+        while (running) {
+            cycleTime = System.currentTimeMillis();
+                                    
+            renderGame();
+            
+            cycleTime = System.currentTimeMillis() - cycleTime;
+            sleepTime = speed - cycleTime;
+            
+            if (sleepTime < 0) {
+                sleepTime = 0;
+            }
+            
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null,
+                        ex);
+            }
+        }
     }
     
     private void renderGame() {
