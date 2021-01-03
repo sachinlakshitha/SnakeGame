@@ -34,11 +34,20 @@ public class Main implements KeyListener, WindowListener{
     private int gameSize = 40;
     private int[][] grid = null;
     private int[][] snake = null;
+    
+    private int direction = -1;
+    private int next_direction = -1;
+    
     public final static int FOOD_BONUS = 1;
     public final static int FOOD_MALUS = 2;
     public final static int BIG_FOOD_BONUS = 3;
     public final static int SNAKE = 4;
     public final static int SNAKE_HEAD = 5;
+    
+    public final static int UP = 0;
+    public final static int DOWN = 1;
+    public final static int LEFT = 2;
+    public final static int RIGHT = 3;
     
     public final static int EMPTY = 0;
     
@@ -113,7 +122,12 @@ public class Main implements KeyListener, WindowListener{
     public void mainLoop() {
         while (running) {
             cycleTime = System.currentTimeMillis();
-                                    
+                        
+            if (!paused && !game_over) {
+                direction = next_direction;
+                moveSnake();
+            }
+            
             renderGame();
             
             cycleTime = System.currentTimeMillis() - cycleTime;
@@ -192,6 +206,108 @@ public class Main implements KeyListener, WindowListener{
             Toolkit.getDefaultToolkit().sync();
         } while (strategy.contentsLost());
     }
+    
+    private void moveSnake() {
+        if (direction < 0) {
+            return;
+        }
+        
+        int ymove = 0;
+        int xmove = 0;
+        
+        switch (direction) {
+            case UP:
+                xmove = 0;
+                ymove = -1;
+                break;
+            case DOWN:
+                xmove = 0;
+                ymove = 1;
+                break;
+            case RIGHT:
+                xmove = 1;
+                ymove = 0;
+                break;
+            case LEFT:
+                xmove = -1;
+                ymove = 0;
+                break;
+            default:
+                xmove = 0;
+                ymove = 0;
+                break;
+        }
+
+        int tempx = snake[0][0];
+        int tempy = snake[0][1];
+
+        int fut_x = snake[0][0] + xmove;
+        int fut_y = snake[0][1] + ymove;
+
+        if (fut_x < 0) {
+            fut_x = gameSize - 1;
+        }
+        if (fut_y < 0) {
+            fut_y = gameSize - 1;
+        }
+        if (fut_x >= gameSize) {
+            fut_x = 0;
+        }
+        if (fut_y >= gameSize) {
+            fut_y = 0;
+        }
+
+        snake[0][0] = fut_x;
+        snake[0][1] = fut_y;
+
+        grid[tempx][tempy] = EMPTY;
+
+        int snakex, snakey, i;
+
+        for (i = 1; i < gameSize * gameSize; i++) {
+            if ((snake[i][0] < 0) || (snake[i][1] < 0)) {
+                break;
+            }
+            
+            grid[snake[i][0]][snake[i][1]] = EMPTY;
+            snakex = snake[i][0];
+            snakey = snake[i][1];
+            snake[i][0] = tempx;
+            snake[i][1] = tempy;
+            tempx = snakex;
+            tempy = snakey;
+        }
+
+        grid[snake[0][0]][snake[0][1]] = SNAKE_HEAD;
+        
+        for (i = 1; i < gameSize * gameSize; i++) {
+            if ((snake[i][0] < 0) || (snake[i][1] < 0)) {
+                break;
+            }
+            
+            grid[snake[i][0]][snake[i][1]] = SNAKE;
+        }
+
+        bonusTime--;
+        
+        if (bonusTime == 0) {
+            for (i = 0; i < gameSize; i++) {
+                for (int j = 0; j < gameSize; j++) {
+                    if (grid[i][j] == BIG_FOOD_BONUS) {
+                        grid[i][j] = EMPTY;
+                    }
+                }
+            }
+        }
+        
+        if (grow > 0) {
+            snake[i][0] = tempx;
+            snake[i][1] = tempy;
+            grid[snake[i][0]][snake[i][1]] = SNAKE;
+                        
+            grow--;
+        }
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -200,7 +316,54 @@ public class Main implements KeyListener, WindowListener{
 
     @Override
     public void keyPressed(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        int code = e.getKeyCode();
+
+        paused = false;
+
+        switch (code) {
+            case KeyEvent.VK_UP:
+                if (direction != DOWN) {
+                    next_direction = UP;
+                }
+
+                break;
+
+            case KeyEvent.VK_DOWN:
+                if (direction != UP) {
+                    next_direction = DOWN;
+                }
+
+                break;
+
+            case KeyEvent.VK_LEFT:
+                if (direction != RIGHT) {
+                    next_direction = LEFT;
+                }
+
+                break;
+
+            case KeyEvent.VK_RIGHT:
+                if (direction != LEFT) {
+                    next_direction = RIGHT;
+                }
+
+                break;
+  
+            case KeyEvent.VK_ESCAPE:
+                running = false;
+                System.exit(0);
+                break;
+
+            case KeyEvent.VK_SPACE:
+                if (!game_over) {
+                    paused = true;
+                }
+                break;
+
+            default:
+                // Unsupported key
+                break;
+        }
     }
 
     @Override
