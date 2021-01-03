@@ -117,6 +117,7 @@ public class Main implements KeyListener, WindowListener{
         snake[0][0] = gameSize / 2;
         snake[0][1] = gameSize / 2;
         grid[gameSize / 2][gameSize / 2] = SNAKE_HEAD;
+        placeBonus(FOOD_BONUS);
     }
     
     public void mainLoop() {
@@ -306,6 +307,16 @@ public class Main implements KeyListener, WindowListener{
             grid[snake[i][0]][snake[i][1]] = SNAKE;
                         
             grow--;
+        }
+    }
+    
+    private void placeBonus(int bonus_type) {
+        int x = (int) (Math.random() * 1000) % gameSize;
+        int y = (int) (Math.random() * 1000) % gameSize;
+        if (grid[x][y] == EMPTY) {
+            grid[x][y] = bonus_type;
+        } else {
+            placeBonus(bonus_type);
         }
     }
 
