@@ -10,6 +10,9 @@
  */
 import java.util.ArrayList;
 import java.util.HashMap;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
+import org.junit.Test;
 
 public class TestSnakeGame {
     int xMax = 16;
@@ -49,4 +52,90 @@ public class TestSnakeGame {
         return map;
     }
     
+    @Test
+    public void isInsideBoundriesMove() {
+        int moveX = 0;
+        int moveY = 0;
+        
+        HashMap<Integer, HashMap<Integer, String>> map = getMap(xMax, yMax);
+
+        assertTrue("Move is inside boundries",
+                true == map.containsKey(moveX) && 
+                        true == map.get(moveX).containsKey(moveY));
+    }
+
+    @Test
+    public void isOutsideBoundriesMove() {
+        int moveX = 17;
+        int moveY = 0;
+
+        HashMap<Integer, HashMap<Integer, String>> map = getMap(xMax, yMax);
+        
+        assertFalse("Move is outside boundries", 
+                true == map.containsKey(moveX) && 
+                        true == map.get(moveX).containsKey(moveY));
+    }
+
+    @Test
+    public void isMoveInCellSnakeBody() {
+        int moveX = 0;
+        int moveY = 0;
+        
+        ArrayList<Cell> occupiedCells = new ArrayList<Cell>();
+        occupiedCells.add(new Cell(moveX, moveY, "*"));
+        
+        HashMap<Integer, HashMap<Integer, String>> map = getMap(xMax, yMax, occupiedCells);
+
+        assertTrue("Move should go to a false location", map.get(moveX).get(moveY) == "*");
+    }
+
+    @Test
+    public void isTokenCellValidMove() {
+        int moveX = 0;
+        int moveY = 0;
+        
+        ArrayList<Cell> occupiedCells = new ArrayList<Cell>();
+        occupiedCells.add(new Cell(2, 3, "#"));
+        
+        HashMap<Integer, HashMap<Integer, String>> map = getMap(xMax, yMax, occupiedCells);
+
+        assertTrue("Move should go to a valid location", 
+                map.get(moveX).get(moveY) == "0" || map.get(moveX).get(moveY) == "#");
+    }
+
+    @Test
+    public void isScoreIncremented() {
+        int moveX = 5;
+        int moveY = 5;
+        int score = 0;
+
+        ArrayList<Cell> occupiedCells = new ArrayList<Cell>();
+        occupiedCells.add(new Cell(moveX, moveY, "#"));
+        
+        HashMap<Integer, HashMap<Integer, String>> map = getMap(xMax, yMax, occupiedCells);
+
+        if ("#" == map.get(moveX).get(moveY)) {
+            score += 1;
+        }
+
+        assertTrue("score was incremented", 1 == score);
+    }
+
+    @Test
+    public void isSnakeIncremented() {
+        int moveX = 5;
+        int moveY = 5;
+        int grow = 0;
+
+        ArrayList<Cell> occupiedCells = new ArrayList<Cell>();
+        occupiedCells.add(new Cell(moveX, moveY, "#"));
+        
+        HashMap<Integer, HashMap<Integer, String>> map = getMap(xMax, yMax, occupiedCells);
+
+        if ("#" == map.get(moveX).get(moveY)) {
+            grow += 1;
+        }
+
+        assertTrue("snake was incremented", 1 == grow);
+    }
 }
